@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import "../App.css";
 import "./SignUpForm.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function SignUpForm() {
   const [formData, setFormData] = useState({});
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -12,10 +15,40 @@ function SignUpForm() {
     });
   };
 
+  const a2nce = `${process.env.REACT_APP_SERVER}/auth/signup`;
+  console.log(a2nce);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch("/server/auth/signup", formData);
+    try {
+      setLoading(true);
+      const res = await fetch(
+        `${process.env.REACT_APP_SERVER}/server/auth/signup`,
+        {
+          method: "POST",
+          mode: "cors",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+      const data = await res.json();
+      if (data.success === false) {
+        setError(data.message);
+        setLoading(false);
+        return;
+      }
+      setError(null);
+      setLoading(false);
+      navigate("/sign-in");
+    } catch (error) {
+      setLoading(false);
+      setError(error.message);
+    }
+    // console.log(data);
   };
+
   console.log(formData);
   return (
     <div className="signup-container">
@@ -39,7 +72,9 @@ function SignUpForm() {
           className="password"
           onChange={handleChange}
         />
-        <button> Utwórz konto</button>
+        <button disabled={loading}>
+          {loading ? "Ładowanie..." : "Utwórz konto"}
+        </button>
       </form>
       <div className="signin-link">
         <p>Masz konto?</p>
@@ -47,6 +82,7 @@ function SignUpForm() {
           <span className="signin-link-span">Zaloguj się</span>
         </Link>
       </div>
+      {error && <p>{error}</p>}
     </div>
   );
 }

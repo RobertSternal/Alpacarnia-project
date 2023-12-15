@@ -1,11 +1,11 @@
 import React from "react";
 import "../../App.css";
-import SignUpForm from "../SignUpForm";
+import SignInForm from "../SignInForm";
 
 export default function SignIn() {
   return (
     <>
-      <SignUpForm />
+      <SignInForm />
       signin
     </>
   );

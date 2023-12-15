@@ -7,6 +7,8 @@ import Services from "./components/pages/Services";
 import SignUp from "./components/pages/SignUp";
 import Products from "./components/pages/Products";
 import SignIn from "./components/pages/SignIn";
+import Profile from "./components/pages/Profile";
+import Private from "./components/Private";
 
 function App() {
   return (
@@ -19,6 +21,9 @@ function App() {
           <Route path="/products" exact element={<Products />} />
           <Route path="/sign-up" exact element={<SignUp />} />
           <Route path="/sign-in" exact element={<SignIn />} />
+          <Route exact element={<Private />}>
+            <Route path="/profile" exact element={<Profile />} />
+          </Route>
         </Routes>
       </Router>
     </>

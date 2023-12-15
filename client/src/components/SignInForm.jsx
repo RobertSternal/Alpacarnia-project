@@ -1,13 +1,19 @@
 import React, { useState } from "react";
 import "../App.css";
-import "./SignUpForm.css";
+import "./SignInForm.css";
 import { Link, useNavigate } from "react-router-dom";
-
-function SignUpForm() {
+import { useDispatch, useSelector } from "react-redux";
+import {
+  signInStart,
+  signInFailure,
+  signInSuccess,
+} from "../redux/user/userSlice";
+import OAuth from "./OAuth";
+function SignInForm() {
   const [formData, setFormData] = useState({});
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector((state) => state.user);
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -15,15 +21,15 @@ function SignUpForm() {
     });
   };
 
-  const a2nce = `${process.env.REACT_APP_SERVER}/auth/signup`;
-  console.log(a2nce);
+  //const a2nce = `${process.env.REACT_APP_SERVER}/auth/signin`;
+  //console.log(a2nce);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      setLoading(true);
+      dispatch(signInStart());
       const res = await fetch(
-        `${process.env.REACT_APP_SERVER}/server/auth/signup`,
+        `${process.env.REACT_APP_SERVER}/server/auth/signin`,
         {
           method: "POST",
           mode: "cors",
@@ -35,16 +41,13 @@ function SignUpForm() {
       );
       const data = await res.json();
       if (data.success === false) {
-        setError(data.message);
-        setLoading(false);
+        dispatch(signInFailure(data.message));
         return;
       }
-      setError(null);
-      setLoading(false);
-      navigate("/sign-in");
+      dispatch(signInSuccess(data));
+      navigate("/");
     } catch (error) {
-      setLoading(false);
-      setError(error.message);
+      dispatch(signInFailure(error.message));
     }
     // console.log(data);
   };
@@ -52,14 +55,8 @@ function SignUpForm() {
   console.log(formData);
   return (
     <div className="signup-container">
-      <h1 className="signup-title"> Zarejestruj się </h1>
-      <form onSubmit={handleSubmit} className="signup-form">
-        <input
-          type="text"
-          placeholder="username"
-          className="username"
-          onChange={handleChange}
-        />
+      <h1 className="signup-title"> Zaloguj się </h1>
+      <form onSubmit={handleSubmit} className="signin-form">
         <input
           type="email"
           placeholder="email"
@@ -73,13 +70,14 @@ function SignUpForm() {
           onChange={handleChange}
         />
         <button disabled={loading}>
-          {loading ? "Ładowanie..." : "Utwórz konto"}
+          {loading ? "Ładowanie..." : "Zaloguj się"}
         </button>
+        <OAuth />
       </form>
       <div className="signin-link">
-        <p>Masz konto?</p>
-        <Link to={"/sign-in"}>
-          <span className="signin-link-span">Zaloguj się</span>
+        <p>Nie masz konta?</p>
+        <Link to={"/sign-up"}>
+          <span className="signin-link-span">Zarejestruj się</span>
         </Link>
       </div>
       {error && <p>{error}</p>}
@@ -87,4 +85,4 @@ function SignUpForm() {
   );
 }
 
-export default SignUpForm;
+export default SignInForm;

@@ -82,6 +82,7 @@ export default function ProfileComp() {
         `${process.env.REACT_APP_SERVER}/server/user/update/${currentUser._id}`,
         {
           method: "POST",
+
           headers: {
             "Content-Type": "application/json",
           },

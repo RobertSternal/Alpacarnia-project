@@ -20,6 +20,7 @@ export default function OAuth() {
         `${process.env.REACT_APP_SERVER}/server/auth/oauth`,
         {
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
